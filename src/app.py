@@ -81,15 +81,19 @@ def predict():
         return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
+    import os
+    
+    # Use environment PORT if available (for Render/Heroku)
+    port = int(os.environ.get('PORT', 5000))
+    
     print("\n" + "=" * 60)
     print("🌐 STARTING WEB APPLICATION")
     print("=" * 60)
-    print(f"📍 URL: http://{Config.FLASK_HOST}:{Config.FLASK_PORT}")
-    print(f"🔧 Debug mode: {Config.FLASK_DEBUG}")
+    print(f"📍 Port: {port}")
     print("=" * 60 + "\n")
     
     app.run(
-        host=Config.FLASK_HOST, 
-        port=Config.FLASK_PORT, 
-        debug=Config.FLASK_DEBUG
+        host='0.0.0.0',  # Required for Render
+        port=port,
+        debug=False  # NEVER True in production!
     )
