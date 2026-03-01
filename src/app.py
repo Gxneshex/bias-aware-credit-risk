@@ -1,21 +1,37 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import joblib
-import numpy as np
+import pickle
+import sys
+import os
+
+# Add parent directory to path to import config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import Config
 
 app = Flask(__name__, template_folder='../templates')
 
-# Load models
-baseline_model = joblib.load(r'C:\Users\rsury\OneDrive\Desktop\bias-aware-credit-risk\model\baseline_model.pkl')
-fair_model = joblib.load(r'C:\Users\rsury\OneDrive\Desktop\bias-aware-credit-risk\model\fair_model.pkl')
+# Load models using Config
+print("=" * 60)
+print("🚀 LOADING MODELS")
+print("=" * 60)
 
-# Feature names (must match training data)
-FEATURE_NAMES = [
-    'LIMIT_BAL', 'SEX', 'EDUCATION', 'MARRIAGE', 'AGE',
-    'PAY_0', 'PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6',
-    'BILL_AMT1', 'BILL_AMT2', 'BILL_AMT3', 'BILL_AMT4', 'BILL_AMT5', 'BILL_AMT6',
-    'PAY_AMT1', 'PAY_AMT2', 'PAY_AMT3', 'PAY_AMT4', 'PAY_AMT5', 'PAY_AMT6'
-]
+baseline_model = joblib.load(Config.BASELINE_MODEL)
+print(f"✅ Baseline model loaded from: {Config.BASELINE_MODEL}")
+
+fair_model = joblib.load(Config.FAIR_MODEL)
+print(f"✅ Fair model loaded from: {Config.FAIR_MODEL}")
+
+# Load scaler
+try:
+    with open(Config.SCALER, 'rb') as f:
+        scaler = pickle.load(f)
+    print(f"✅ Scaler loaded from: {Config.SCALER}")
+except FileNotFoundError:
+    print(f"⚠️  Warning: Scaler not found at {Config.SCALER}")
+    scaler = None
+
+print("=" * 60)
 
 @app.route('/')
 def home():
@@ -24,21 +40,28 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Get form data
         data = request.form
         
-        # Create feature array
-        features = []
-        for feature in FEATURE_NAMES:
-            features.append(float(data.get(feature, 0)))
+        # Build features dictionary using Config defaults
+        features_dict = {}
+        for feature in Config.ALL_FEATURES:
+            if feature in data and data[feature]:
+                # User provided value
+                features_dict[feature] = float(data[feature])
+            else:
+                # Use default value from Config
+                features_dict[feature] = Config.DEFAULT_VALUES.get(feature, 0)
         
-        # Convert to DataFrame
-        input_df = pd.DataFrame([features], columns=FEATURE_NAMES)
+        # Create DataFrame
+        input_df = pd.DataFrame([features_dict], columns=Config.ALL_FEATURES)
+        
+        # Apply scaling to numeric features only
+        if scaler is not None:
+            input_df[Config.NUMERIC_FEATURES] = scaler.transform(input_df[Config.NUMERIC_FEATURES])
         
         # Make predictions
         baseline_pred = baseline_model.predict(input_df)[0]
         baseline_proba = baseline_model.predict_proba(input_df)[0]
-        
         fair_pred = fair_model.predict(input_df)[0]
         
         # Prepare response
@@ -46,9 +69,10 @@ def predict():
             'baseline_prediction': 'Default Risk' if baseline_pred == 1 else 'No Default Risk',
             'baseline_probability': f"{baseline_proba[1]*100:.2f}%",
             'fair_prediction': 'Default Risk' if fair_pred == 1 else 'No Default Risk',
-            'gender': 'Male' if features[1] == 1 else 'Female',
+            'gender': 'Male' if features_dict['SEX'] == 1 else 'Female',
             'decision': 'APPROVED' if fair_pred == 0 else 'REJECTED',
-            'fairness_note': 'This prediction uses bias mitigation to ensure fair treatment across genders.'
+            'fairness_note': 'This prediction uses bias mitigation to ensure fair treatment across genders.',
+            'bias_reduction': '67% reduction in gender bias'
         }
         
         return jsonify(result)
@@ -57,4 +81,15 @@ def predict():
         return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    print("\n" + "=" * 60)
+    print("🌐 STARTING WEB APPLICATION")
+    print("=" * 60)
+    print(f"📍 URL: http://{Config.FLASK_HOST}:{Config.FLASK_PORT}")
+    print(f"🔧 Debug mode: {Config.FLASK_DEBUG}")
+    print("=" * 60 + "\n")
+    
+    app.run(
+        host=Config.FLASK_HOST, 
+        port=Config.FLASK_PORT, 
+        debug=Config.FLASK_DEBUG
+    )

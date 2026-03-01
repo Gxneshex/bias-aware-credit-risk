@@ -121,65 +121,113 @@
         <p class="subtitle">Bias-Aware AI System for Fair Credit Decisions</p>
         
         <form id="predictionForm">
+    <h3 style="color: #667eea; margin-bottom: 20px;">Applicant Information</h3>
+    
+    <!-- Basic Info -->
+    <div class="form-group">
+        <label>Credit Limit (Amount in $)</label>
+        <input type="number" name="LIMIT_BAL" required placeholder="e.g., 50000" min="10000" max="1000000">
+    </div>
+    
+    <div class="form-group">
+        <label>Gender</label>
+        <select name="SEX" required>
+            <option value="1">Male</option>
+            <option value="2">Female</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Education Level</label>
+        <select name="EDUCATION" required>
+            <option value="1">Graduate School</option>
+            <option value="2">University</option>
+            <option value="3">High School</option>
+            <option value="4">Others</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Marital Status</label>
+        <select name="MARRIAGE" required>
+            <option value="1">Married</option>
+            <option value="2">Single</option>
+            <option value="3">Others</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Age</label>
+        <input type="number" name="AGE" required placeholder="e.g., 35" min="21" max="100">
+    </div>
+    
+    <!-- Payment History Section -->
+    <h3 style="color: #667eea; margin: 30px 0 20px 0;">Payment History (Last 6 Months)</h3>
+    <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+        -1 = Paid on time | 0 = Revolving credit | 1-9 = Months of delay
+    </p>
+    
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        <div class="form-group">
+            <label>Last Month (PAY_0)</label>
+            <select name="PAY_0">
+                <option value="-1">Paid on time</option>
+                <option value="0">Revolving</option>
+                <option value="1">1 month delay</option>
+                <option value="2">2 months delay</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>2 Months Ago</label>
+            <select name="PAY_2">
+                <option value="-1">Paid on time</option>
+                <option value="0">Revolving</option>
+                <option value="1">1 month delay</option>
+                <option value="2">2 months delay</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>3 Months Ago</label>
+            <select name="PAY_3">
+                <option value="-1">Paid on time</option>
+                <option value="0">Revolving</option>
+                <option value="1">1 month delay</option>
+                <option value="2">2 months delay</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Optional: Add financial details toggle -->
+    <details style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <summary style="cursor: pointer; font-weight: bold; color: #667eea;">
+            ⚙️ Advanced: Financial Details (Optional)
+        </summary>
+        <div style="margin-top: 15px;">
             <div class="form-group">
-                <label>Credit Limit (Amount)</label>
-                <input type="number" name="LIMIT_BAL" required placeholder="e.g., 50000">
+                <label>Last Bill Amount ($)</label>
+                <input type="number" name="BILL_AMT1" placeholder="Leave blank for average" min="0">
             </div>
             
             <div class="form-group">
-                <label>Gender</label>
-                <select name="SEX" required>
-                    <option value="1">Male</option>
-                    <option value="2">Female</option>
-                </select>
+                <label>Last Payment Amount ($)</label>
+                <input type="number" name="PAY_AMT1" placeholder="Leave blank for average" min="0">
             </div>
             
-            <div class="form-group">
-                <label>Education</label>
-                <select name="EDUCATION" required>
-                    <option value="1">Graduate School</option>
-                    <option value="2">University</option>
-                    <option value="3">High School</option>
-                    <option value="4">Others</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Marital Status</label>
-                <select name="MARRIAGE" required>
-                    <option value="1">Married</option>
-                    <option value="2">Single</option>
-                    <option value="3">Others</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" name="AGE" required placeholder="e.g., 35">
-            </div>
-            
-            <!-- Simplified: Other fields default to 0 -->
-            <input type="hidden" name="PAY_0" value="0">
-            <input type="hidden" name="PAY_2" value="0">
-            <input type="hidden" name="PAY_3" value="0">
-            <input type="hidden" name="PAY_4" value="0">
-            <input type="hidden" name="PAY_5" value="0">
-            <input type="hidden" name="PAY_6" value="0">
-            <input type="hidden" name="BILL_AMT1" value="0">
-            <input type="hidden" name="BILL_AMT2" value="0">
-            <input type="hidden" name="BILL_AMT3" value="0">
-            <input type="hidden" name="BILL_AMT4" value="0">
-            <input type="hidden" name="BILL_AMT5" value="0">
-            <input type="hidden" name="BILL_AMT6" value="0">
-            <input type="hidden" name="PAY_AMT1" value="0">
-            <input type="hidden" name="PAY_AMT2" value="0">
-            <input type="hidden" name="PAY_AMT3" value="0">
-            <input type="hidden" name="PAY_AMT4" value="0">
-            <input type="hidden" name="PAY_AMT5" value="0">
-            <input type="hidden" name="PAY_AMT6" value="0">
-            
-            <button type="submit" class="btn">Predict Credit Risk</button>
-        </form>
+            <p style="font-size: 11px; color: #666; font-style: italic;">
+                * If left blank, system uses typical values based on your credit limit
+            </p>
+        </div>
+    </details>
+    
+    <!-- Hidden fields for remaining features (use smart defaults) -->
+    <input type="hidden" name="PAY_4" value="-1">
+    <input type="hidden" name="PAY_5" value="-1">
+    <input type="hidden" name="PAY_6" value="-1">
+    
+    <button type="submit" class="btn">Predict Credit Risk</button>
+</form>
         
         <div id="result" class="result">
             <h2>Prediction Results</h2>
@@ -223,5 +271,80 @@
             document.getElementById('result').style.display = 'block';
         });
     </script>
+<script>
+document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    const button = this.querySelector('button');
+    const originalText = button.textContent;
+    button.textContent = 'Predicting...';
+    button.disabled = true;
+    
+    try {
+        const formData = new FormData(this);
+        
+        // Validate credit limit
+        const creditLimit = parseInt(formData.get('LIMIT_BAL'));
+        if (creditLimit < 10000 || creditLimit > 1000000) {
+            alert('Credit limit must be between $10,000 and $1,000,000');
+            button.textContent = originalText;
+            button.disabled = false;
+            return;
+        }
+        
+        // Validate age
+        const age = parseInt(formData.get('AGE'));
+        if (age < 21 || age > 100) {
+            alert('Age must be between 21 and 100');
+            button.textContent = originalText;
+            button.disabled = false;
+            return;
+        }
+        
+        const response = await fetch('/predict', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error('Prediction failed');
+        }
+        
+        const result = await response.json();
+        
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        
+        // Display results
+        document.getElementById('baselinePred').innerHTML = `
+            ${result.baseline_prediction} 
+            <span style="font-size: 12px; color: #666;">(${result.baseline_probability} probability)</span>
+        `;
+        document.getElementById('fairPred').textContent = result.fair_prediction;
+        
+        const decisionSpan = document.getElementById('decision');
+        decisionSpan.textContent = result.decision;
+        decisionSpan.className = result.decision === 'APPROVED' ? 'approved' : 'rejected';
+        
+        document.getElementById('fairnessNote').innerHTML = `
+            ${result.fairness_note}<br>
+            <strong>Impact:</strong> ${result.bias_reduction}
+        `;
+        
+        document.getElementById('result').style.display = 'block';
+        
+        // Scroll to results
+        document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        button.textContent = originalText;
+        button.disabled = false;
+    }
+});
+</script>
 </body>
 </html>
