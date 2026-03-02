@@ -41,6 +41,16 @@
             font-size: 1.1em;
         }
         
+        .demo-badge {
+            text-align: center;
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+        
         .form-group {
             margin-bottom: 20px;
         }
@@ -83,6 +93,12 @@
             transform: translateY(-2px);
         }
         
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .result {
             margin-top: 30px;
             padding: 25px;
@@ -113,6 +129,16 @@
             color: #dc3545;
             font-weight: bold;
         }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #dc3545;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -120,117 +146,55 @@
         <h1>🏦 Credit Risk Predictor</h1>
         <p class="subtitle">Bias-Aware AI System for Fair Credit Decisions</p>
         
+        <div class="demo-badge">
+            ⚠️ <strong>Demo Mode:</strong> Using sample predictions. Full model requires larger instance.
+        </div>
+        
         <form id="predictionForm">
-    <h3 style="color: #667eea; margin-bottom: 20px;">Applicant Information</h3>
-    
-    <!-- Basic Info -->
-    <div class="form-group">
-        <label>Credit Limit (Amount in $)</label>
-        <input type="number" name="LIMIT_BAL" required placeholder="e.g., 50000" min="10000" max="1000000">
-    </div>
-    
-    <div class="form-group">
-        <label>Gender</label>
-        <select name="SEX" required>
-            <option value="1">Male</option>
-            <option value="2">Female</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label>Education Level</label>
-        <select name="EDUCATION" required>
-            <option value="1">Graduate School</option>
-            <option value="2">University</option>
-            <option value="3">High School</option>
-            <option value="4">Others</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label>Marital Status</label>
-        <select name="MARRIAGE" required>
-            <option value="1">Married</option>
-            <option value="2">Single</option>
-            <option value="3">Others</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label>Age</label>
-        <input type="number" name="AGE" required placeholder="e.g., 35" min="21" max="100">
-    </div>
-    
-    <!-- Payment History Section -->
-    <h3 style="color: #667eea; margin: 30px 0 20px 0;">Payment History (Last 6 Months)</h3>
-    <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
-        -1 = Paid on time | 0 = Revolving credit | 1-9 = Months of delay
-    </p>
-    
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-        <div class="form-group">
-            <label>Last Month (PAY_0)</label>
-            <select name="PAY_0">
-                <option value="-1">Paid on time</option>
-                <option value="0">Revolving</option>
-                <option value="1">1 month delay</option>
-                <option value="2">2 months delay</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label>2 Months Ago</label>
-            <select name="PAY_2">
-                <option value="-1">Paid on time</option>
-                <option value="0">Revolving</option>
-                <option value="1">1 month delay</option>
-                <option value="2">2 months delay</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label>3 Months Ago</label>
-            <select name="PAY_3">
-                <option value="-1">Paid on time</option>
-                <option value="0">Revolving</option>
-                <option value="1">1 month delay</option>
-                <option value="2">2 months delay</option>
-            </select>
-        </div>
-    </div>
-    
-    <!-- Optional: Add financial details toggle -->
-    <details style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-        <summary style="cursor: pointer; font-weight: bold; color: #667eea;">
-            ⚙️ Advanced: Financial Details (Optional)
-        </summary>
-        <div style="margin-top: 15px;">
             <div class="form-group">
-                <label>Last Bill Amount ($)</label>
-                <input type="number" name="BILL_AMT1" placeholder="Leave blank for average" min="0">
+                <label>Credit Limit (Amount in $)</label>
+                <input type="number" name="LIMIT_BAL" required placeholder="e.g., 50000" min="10000" max="1000000">
             </div>
             
             <div class="form-group">
-                <label>Last Payment Amount ($)</label>
-                <input type="number" name="PAY_AMT1" placeholder="Leave blank for average" min="0">
+                <label>Gender</label>
+                <select name="SEX" required>
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+                </select>
             </div>
             
-            <p style="font-size: 11px; color: #666; font-style: italic;">
-                * If left blank, system uses typical values based on your credit limit
-            </p>
-        </div>
-    </details>
-    
-    <!-- Hidden fields for remaining features (use smart defaults) -->
-    <input type="hidden" name="PAY_4" value="-1">
-    <input type="hidden" name="PAY_5" value="-1">
-    <input type="hidden" name="PAY_6" value="-1">
-    
-    <button type="submit" class="btn">Predict Credit Risk</button>
-</form>
+            <div class="form-group">
+                <label>Education Level</label>
+                <select name="EDUCATION" required>
+                    <option value="1">Graduate School</option>
+                    <option value="2">University</option>
+                    <option value="3">High School</option>
+                    <option value="4">Others</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Marital Status</label>
+                <select name="MARRIAGE" required>
+                    <option value="1">Married</option>
+                    <option value="2">Single</option>
+                    <option value="3">Others</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="AGE" required placeholder="e.g., 35" min="21" max="100">
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">Predict Credit Risk</button>
+        </form>
+        
+        <div id="errorMessage" class="error-message"></div>
         
         <div id="result" class="result">
-            <h2>Prediction Results</h2>
+            <h2>📊 Prediction Results</h2>
             <div class="result-item">
                 <strong>Baseline Model:</strong> <span id="baselinePred"></span>
             </div>
@@ -246,46 +210,80 @@
         </div>
     </div>
     
-<script>
-document.getElementById('predictionForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    try {
-        const response = await fetch('/predict', {
-            method: 'POST',
-            body: formData
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Disable button and show loading state
+            const button = document.getElementById('submitBtn');
+            const originalText = button.textContent;
+            button.textContent = 'Predicting...';
+            button.disabled = true;
+            
+            // Hide previous results and errors
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            try {
+                const formData = new FormData(this);
+                
+                console.log('Sending request to /predict...');
+                
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server error:', errorText);
+                    throw new Error(`Server returned ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Result:', result);
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                // Display results
+                document.getElementById('baselinePred').innerHTML = 
+                    result.baseline_prediction + 
+                    (result.baseline_probability ? ` <span style="font-size: 12px; color: #666;">(${result.baseline_probability} probability)</span>` : '');
+                
+                document.getElementById('fairPred').textContent = result.fair_prediction;
+                
+                const decisionSpan = document.getElementById('decision');
+                decisionSpan.textContent = result.decision;
+                decisionSpan.className = result.decision === 'APPROVED' ? 'approved' : 'rejected';
+                
+                let fairnessText = result.fairness_note;
+                if (result.bias_reduction) {
+                    fairnessText += '<br><strong>Impact:</strong> ' + result.bias_reduction;
+                }
+                document.getElementById('fairnessNote').innerHTML = fairnessText;
+                
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = '❌ Error: ' + error.message + '. Please try again or check the console for details.';
+                errorDiv.style.display = 'block';
+            } finally {
+                // Re-enable button
+                button.textContent = originalText;
+                button.disabled = false;
+            }
         });
         
-        if (!response.ok) {
-            throw new Error('Prediction failed');
-        }
-        
-        const result = await response.json();
-        
-        if (result.error) {
-            alert('Error: ' + result.error);
-            return;
-        }
-        
-        // Display results
-        document.getElementById('baselinePred').textContent = result.baseline_prediction;
-        document.getElementById('fairPred').textContent = result.fair_prediction;
-        
-        const decisionSpan = document.getElementById('decision');
-        decisionSpan.textContent = result.decision;
-        decisionSpan.className = result.decision === 'APPROVED' ? 'approved' : 'rejected';
-        
-        document.getElementById('fairnessNote').textContent = result.fairness_note;
-        
-        document.getElementById('result').style.display = 'block';
-        
-    } catch (error) {
-        alert('Prediction failed: ' + error.message);  // THIS IS WHAT YOU'RE SEEING
-        console.error('Error:', error);
-    }
-});
-</script>
+        // Log when page loads
+        console.log('Bias-Aware Credit Risk Predictor loaded');
+        console.log('Ready to make predictions');
+    </script>
 </body>
 </html>
