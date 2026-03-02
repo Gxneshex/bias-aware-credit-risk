@@ -198,3 +198,17 @@ if __name__ == "__main__":
     
     # Verify files
     Config.verify_files_exist()
+# Check if running on Render
+    IS_RENDER = os.environ.get('RENDER') is not None
+    
+    if IS_RENDER:
+        # Use relative paths on Render
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    else:
+        # Use your local Windows paths
+        BASE_DIR = r'C:\Users\rsury\OneDrive\Desktop\bias-aware-credit-risk'
+    
+    # Rest of your paths remain the same...
+    DATA_DIR = os.path.join(BASE_DIR, 'data')
+    MODEL_DIR = os.path.join(BASE_DIR, 'model')
+    # ... etc
